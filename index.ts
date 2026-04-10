@@ -8,12 +8,41 @@ import {
 import type { RichTextBlockElement, RichTextElement } from "@slack/types";
 import { CHANNEL_ID, GROUP_ID } from "./constants";
 
+type UserTypingEvent = {
+  type: "user_typing";
+  channel: string;
+  user: string;
+};
+
+const TYPING_EPHEMERAL_COOLDOWN_MS = 10_000;
+const lastTypingNoticeAt = new Map<string, number>();
+
 // Initializes your app with your Slack app and bot token
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   socketMode: process.env.SLACK_SOCKET_MODE === "true",
   appToken: process.env.SLACK_APP_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+});
+
+app.event("user_typing", async ({ event }) => {
+  const typingEvent = event as UserTypingEvent;
+
+  if (typingEvent.channel !== CHANNEL_ID) return;
+
+  const throttleKey = `${typingEvent.channel}:${typingEvent.user}`;
+  const now = Date.now();
+  const lastNoticeAt = lastTypingNoticeAt.get(throttleKey) ?? 0;
+
+  if (now - lastNoticeAt < TYPING_EPHEMERAL_COOLDOWN_MS) return;
+
+  lastTypingNoticeAt.set(throttleKey, now);
+
+  await app.client.chat.postEphemeral({
+    channel: typingEvent.channel,
+    user: typingEvent.user,
+    text: "you are typing",
+  });
 });
 
 app.event("member_joined_channel", async ({ event, say }) => {
