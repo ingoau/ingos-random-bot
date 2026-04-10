@@ -166,14 +166,19 @@ app.action(
       replace_original: false,
       delete_original: false,
       response_type: "in_channel",
-      text: ":conga_parrot:".repeat(20) + `\nSent by <@${context.userId}>`,
+      text:
+        ":ultrafastcatppuccinparrot:".repeat(20) +
+        `\nSent by <@${context.userId}>`,
       blocks: [
         {
           type: "rich_text",
           elements: [
             {
               type: "rich_text_section",
-              elements: Array(20).fill({ type: "emoji", name: "conga_parrot" }),
+              elements: Array(20).fill({
+                type: "emoji",
+                name: "ultrafastcatppuccinparrot",
+              }),
             },
             {
               type: "rich_text_section",
