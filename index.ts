@@ -16,7 +16,7 @@ app.event("member_joined_channel", async ({ event, say }) => {
 
   await app.client.chat.postMessage({
     channel: event.channel,
-    text: `Welcome to Ingo's channel <@${event.user}>! This is where I post daily updates, and random stuff, as you may have guess from the name :) Also if you want to see me crashing out, you can also join #ingo-crashing-out`,
+    text: `Everyone welcome <@${event.user}> to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:`,
     blocks: [
       {
         type: "rich_text",
@@ -26,11 +26,19 @@ app.event("member_joined_channel", async ({ event, say }) => {
             elements: [
               {
                 type: "text",
-                text: "Welcome to Ingo's channel ",
+                text: "Everyone welcome ",
               },
               {
                 type: "user",
                 user_id: event.user,
+              },
+              {
+                type: "text",
+                text: " to ",
+              },
+              {
+                type: "channel",
+                channel_id: "C0A0QNJNDGQ",
               },
               {
                 type: "text",
@@ -39,14 +47,6 @@ app.event("member_joined_channel", async ({ event, say }) => {
               {
                 type: "emoji",
                 name: "ultrafastcatppuccinparrot",
-              },
-              {
-                type: "text",
-                text: "\n\nThis is where I post daily updates, and random stuff, as you may have guess from the name :) Also if you want to see me crashing out, you can also join ",
-              },
-              {
-                type: "channel",
-                channel_id: "C09PB8F6Z9U",
               },
             ],
           },
