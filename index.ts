@@ -62,8 +62,8 @@ app.event("member_joined_channel", async ({ event, say }) => {
               text: ":ultrafastcatppuccinparrot:",
               emoji: true,
             },
-            value: "ultrafastparrot",
-            action_id: "ultrafastparrot",
+            value: "ultrafastcatppuccinparrot",
+            action_id: "ultrafastcatppuccinparrot",
           },
         ],
       },
@@ -157,34 +157,37 @@ app.action(
   },
 );
 
-app.action("ultrafastparrot", async ({ body, context, ack, respond }) => {
-  await ack();
+app.action(
+  "ultrafastcatppuccinparrot",
+  async ({ body, context, ack, respond }) => {
+    await ack();
 
-  await respond({
-    replace_original: false,
-    delete_original: false,
-    response_type: "in_channel",
-    text: ":conga_parrot:".repeat(20) + `\nSent by <@${context.userId}>`,
-    blocks: [
-      {
-        type: "rich_text",
-        elements: [
-          {
-            type: "rich_text_section",
-            elements: Array(20).fill({ type: "emoji", name: "conga_parrot" }),
-          },
-          {
-            type: "rich_text_section",
-            elements: [
-              { type: "text", text: "Sent by " },
-              { type: "user", user_id: context.userId },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-});
+    await respond({
+      replace_original: false,
+      delete_original: false,
+      response_type: "in_channel",
+      text: ":conga_parrot:".repeat(20) + `\nSent by <@${context.userId}>`,
+      blocks: [
+        {
+          type: "rich_text",
+          elements: [
+            {
+              type: "rich_text_section",
+              elements: Array(20).fill({ type: "emoji", name: "conga_parrot" }),
+            },
+            {
+              type: "rich_text_section",
+              elements: [
+                { type: "text", text: "Sent by " },
+                { type: "user", user_id: context.userId },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  },
+);
 
 app.event("message", async ({ event, say }) => {
   if (
