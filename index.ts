@@ -26,7 +26,7 @@ app.event("member_joined_channel", async ({ event, say }) => {
             elements: [
               {
                 type: "text",
-                text: "Everyone welcome ",
+                text: "everyone welcome ",
               },
               {
                 type: "user",
