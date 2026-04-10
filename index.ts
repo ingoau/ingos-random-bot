@@ -16,7 +16,7 @@ app.event("member_joined_channel", async ({ event, say }) => {
 
   await app.client.chat.postMessage({
     channel: event.channel,
-    text: `Everyone welcome <@${event.user}> to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:`,
+    text: `everyone welcome <@${event.user}> to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:`,
     blocks: [
       {
         type: "rich_text",
