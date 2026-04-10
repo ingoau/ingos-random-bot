@@ -1,4 +1,10 @@
-import { App, subtype } from "@slack/bolt";
+import {
+  App,
+  subtype,
+  type BlockAction,
+  type BlockElementAction,
+  type InteractiveAction,
+} from "@slack/bolt";
 import type { RichTextBlockElement, RichTextElement } from "@slack/types";
 import { CHANNEL_ID, GROUP_ID } from "./constants";
 import { fetchClearURLsRules, checkURLAgainstRules } from "./clearurls";
@@ -187,13 +193,16 @@ app.action(
 
 app.action(
   "ultrafastcatppuccinparrot",
-  async ({ body, context, ack, respond }) => {
+  async ({ body, context, ack, respond, payload }) => {
     await ack();
+
+    const message = (body as BlockAction).message;
 
     await respond({
       replace_original: false,
       delete_original: false,
       response_type: "in_channel",
+      thread_ts: message?.ts,
       text:
         ":ultrafastcatppuccinparrot:".repeat(20) +
         `\nSent by <@${context.userId}>`,
