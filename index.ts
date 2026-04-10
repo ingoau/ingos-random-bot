@@ -82,7 +82,10 @@ app.event("member_joined_channel", async ({ event, say }) => {
   await app.client.chat.postEphemeral({
     channel: event.channel,
     user: event.user,
-    text: "By the way, I added you to @ingos-random-group, so you get pung sometimes when I post something interesting.",
+    text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
+    this is where i yap about random stuff, and only rarely commit academic fraud.
+    please read the rules!
+    btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
     blocks: [
       {
         type: "rich_text",
@@ -92,15 +95,40 @@ app.event("member_joined_channel", async ({ event, say }) => {
             elements: [
               {
                 type: "text",
-                text: "By the way, I added you to ",
+                text: "hello! welcome to ",
               },
               {
-                type: "usergroup",
-                usergroup_id: GROUP_ID,
+                type: "channel",
+                channel_id: "C0A0QNJNDGQ",
               },
               {
                 type: "text",
-                text: ", so you get ",
+                text: "! ",
+              },
+              {
+                type: "emoji",
+                name: "ultrafastcatppuccinparrot",
+              },
+              {
+                type: "text",
+                text: "\nthis is where i yap about random stuff, and only rarely commit academic fraud.\nplease read ",
+              },
+              {
+                type: "link",
+                url: "https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A7L9BQ45R",
+                text: "the rules",
+              },
+              {
+                type: "text",
+                text: "!\nbtw i added you to ",
+              },
+              {
+                type: "usergroup",
+                usergroup_id: "S0A4705UBB3",
+              },
+              {
+                type: "text",
+                text: " so you can ",
               },
               {
                 type: "text",
@@ -111,7 +139,7 @@ app.event("member_joined_channel", async ({ event, say }) => {
               },
               {
                 type: "text",
-                text: " pung sometimes when I post something interesting.",
+                text: " pung when i post interesting stuff.",
               },
             ],
           },
@@ -124,7 +152,7 @@ app.event("member_joined_channel", async ({ event, say }) => {
             type: "button",
             text: {
               type: "plain_text",
-              text: "Remove me",
+              text: "opt out of pings",
             },
             value: "remove_from_ping_group",
             action_id: "remove_from_ping_group",
