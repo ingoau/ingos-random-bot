@@ -1,12 +1,85 @@
 import {
   App,
-  subtype,
   type BlockAction,
-  type BlockElementAction,
-  type InteractiveAction,
 } from "@slack/bolt";
-import type { RichTextBlockElement, RichTextElement } from "@slack/types";
-import { CHANNEL_ID, GROUP_ID } from "./constants";
+import {
+  CHANNEL_ID,
+  GROUP_ID,
+  LOG_CHANNEL_ID,
+  WATCHED_CHANNEL_IDS,
+  WATCHED_USERGROUP_IDS,
+} from "./constants";
+
+const watchedChannelIds = new Set<string>(WATCHED_CHANNEL_IDS);
+const watchedUsergroupIds = new Set<string>(WATCHED_USERGROUP_IDS);
+
+async function logChannelMembershipChange({
+  action,
+  channel,
+  user,
+}: {
+  action: "joined" | "left";
+  channel: string;
+  user: string;
+}) {
+  if (!watchedChannelIds.has(channel)) return;
+
+  await app.client.chat.postMessage({
+    channel: LOG_CHANNEL_ID,
+    text: `<@${user}> ${action} <#${channel}>`,
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              { type: "user", user_id: user },
+              { type: "text", text: ` ${action} ` },
+              { type: "channel", channel_id: channel },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+}
+
+type SubteamMembersChangedEvent = {
+  subteam_id: string;
+  added_users?: string[];
+  removed_users?: string[];
+};
+
+function userListText(users: string[]) {
+  return users.map((user) => `<@${user}>`).join(", ");
+}
+
+async function logUsergroupMembershipChange(
+  event: SubteamMembersChangedEvent,
+) {
+  if (!watchedUsergroupIds.has(event.subteam_id)) return;
+
+  const addedUsers = event.added_users ?? [];
+  const removedUsers = event.removed_users ?? [];
+  const changes = [
+    addedUsers.length
+      ? `Added: ${userListText(addedUsers)}`
+      : undefined,
+    removedUsers.length
+      ? `Removed: ${userListText(removedUsers)}`
+      : undefined,
+  ].filter(Boolean);
+
+  if (!changes.length) return;
+
+  await app.client.chat.postMessage({
+    channel: LOG_CHANNEL_ID,
+    text: `Usergroup <!subteam^${event.subteam_id}> changed. ${changes.join(
+      " ",
+    )}`,
+  });
+}
 
 // Initializes your app with your Slack app and bot token
 const app = new App({
@@ -16,7 +89,13 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-app.event("member_joined_channel", async ({ event, say }) => {
+app.event("member_joined_channel", async ({ event }) => {
+  await logChannelMembershipChange({
+    action: "joined",
+    channel: event.channel,
+    user: event.user,
+  });
+
   if (event.channel != CHANNEL_ID) return;
 
   await app.client.chat.postMessage({
@@ -166,6 +245,18 @@ app.event("member_joined_channel", async ({ event, say }) => {
       },
     ],
   });
+});
+
+app.event("member_left_channel", async ({ event }) => {
+  await logChannelMembershipChange({
+    action: "left",
+    channel: event.channel,
+    user: event.user,
+  });
+});
+
+app.event("subteam_members_changed", async ({ event }) => {
+  await logUsergroupMembershipChange(event);
 });
 
 app.action(
