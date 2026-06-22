@@ -268,6 +268,11 @@ app.message("-67:", async ({ message, client, logger }) => {
       channel: message.channel,
       user: message.user,
     });
+    await client.reactions.add({
+      channel: message.channel,
+      timestamp: message.ts,
+      name: "ban"
+    })
   } catch (error) {
     logger.error("Failed to kick user for -67: trigger", error);
   }
