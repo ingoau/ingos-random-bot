@@ -117,62 +117,6 @@ app.event("member_joined_channel", async ({ event }) => {
 
   if (event.channel != CHANNEL_ID) return;
 
-  await app.client.chat.postMessage({
-    channel: event.channel,
-    text: `everyone welcome <@${event.user}> to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:`,
-    blocks: [
-      {
-        type: "rich_text",
-        elements: [
-          {
-            type: "rich_text_section",
-            elements: [
-              {
-                type: "text",
-                text: "everyone welcome ",
-              },
-              {
-                type: "user",
-                user_id: event.user,
-              },
-              {
-                type: "text",
-                text: " to ",
-              },
-              {
-                type: "channel",
-                channel_id: "C0A0QNJNDGQ",
-              },
-              {
-                type: "text",
-                text: "! ",
-              },
-              {
-                type: "emoji",
-                name: "ultrafastcatppuccinparrot",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: ":ultrafastcatppuccinparrot:",
-              emoji: true,
-            },
-            value: "ultrafastcatppuccinparrot",
-            action_id: "ultrafastcatppuccinparrot",
-          },
-        ],
-      },
-    ],
-  });
-
   const existingMembers = await app.client.usergroups.users.list({
     usergroup: GROUP_ID,
   });
@@ -186,9 +130,10 @@ app.event("member_joined_channel", async ({ event }) => {
     channel: event.channel,
     user: event.user,
     text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
-    this is where i yap about random stuff, and only rarely commit academic fraud.
-    please read the rules!
-    btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
+this is where i yap about random stuff, and only rarely commit academic fraud.
+please read the rules!
+btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
+want me to announce you to the rest of the channel? i'll only send the everyone welcome if you say yes. nobody else can see this.`,
     blocks: [
       {
         type: "rich_text",
@@ -242,7 +187,7 @@ app.event("member_joined_channel", async ({ event }) => {
               },
               {
                 type: "text",
-                text: " pung when i post interesting stuff.",
+                text: " pung when i post interesting stuff.\nwant me to announce you to the rest of the channel? i'll only send the everyone welcome if you say yes. nobody else can see this.",
               },
             ],
           },
@@ -251,6 +196,25 @@ app.event("member_joined_channel", async ({ event }) => {
       {
         type: "actions",
         elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "yeah, announce me",
+            },
+            style: "primary",
+            value: event.user,
+            action_id: "announce_join",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "nah, stay quiet",
+            },
+            value: event.user,
+            action_id: "skip_announce",
+          },
           {
             type: "button",
             text: {
@@ -312,6 +276,239 @@ app.event("reaction_added", async ({ event, client, logger }) => {
   } catch (error) {
     logger.error("Failed to kick user for -67 reaction trigger", error);
   }
+});
+
+app.action("announce_join", async ({ body, ack, respond }) => {
+  await ack();
+
+  const userId = body.user.id;
+  const channelId = (body as BlockAction).channel?.id ?? CHANNEL_ID;
+
+  await app.client.chat.postMessage({
+    channel: channelId,
+    text: `everyone welcome <@${userId}> to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:`,
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              {
+                type: "text",
+                text: "everyone welcome ",
+              },
+              {
+                type: "user",
+                user_id: userId,
+              },
+              {
+                type: "text",
+                text: " to ",
+              },
+              {
+                type: "channel",
+                channel_id: "C0A0QNJNDGQ",
+              },
+              {
+                type: "text",
+                text: "! ",
+              },
+              {
+                type: "emoji",
+                name: "ultrafastcatppuccinparrot",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: ":ultrafastcatppuccinparrot:",
+              emoji: true,
+            },
+            value: "ultrafastcatppuccinparrot",
+            action_id: "ultrafastcatppuccinparrot",
+          },
+        ],
+      },
+    ],
+  });
+
+  await respond({
+    replace_original: true,
+    text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
+this is where i yap about random stuff, and only rarely commit academic fraud.
+please read the rules!
+btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
+ok, announcing you to the rest of the channel now!`,
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              {
+                type: "text",
+                text: "hello! welcome to ",
+              },
+              {
+                type: "channel",
+                channel_id: "C0A0QNJNDGQ",
+              },
+              {
+                type: "text",
+                text: "! ",
+              },
+              {
+                type: "emoji",
+                name: "ultrafastcatppuccinparrot",
+              },
+              {
+                type: "text",
+                text: "\nthis is where i yap about random stuff, and only rarely commit academic fraud.\nplease read ",
+              },
+              {
+                type: "link",
+                url: "https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A7L9BQ45R",
+                text: "the rules",
+              },
+              {
+                type: "text",
+                text: "!\nbtw i added you to ",
+              },
+              {
+                type: "usergroup",
+                usergroup_id: "S0A4705UBB3",
+              },
+              {
+                type: "text",
+                text: " so you can ",
+              },
+              {
+                type: "text",
+                text: "pinged",
+                style: {
+                  strike: true,
+                },
+              },
+              {
+                type: "text",
+                text: " pung when i post interesting stuff.\nok, announcing you to the rest of the channel now!",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "opt out of pings",
+            },
+            value: "remove_from_ping_group",
+            action_id: "remove_from_ping_group",
+          },
+        ],
+      },
+    ],
+  });
+});
+
+app.action("skip_announce", async ({ ack, respond }) => {
+  await ack();
+
+  await respond({
+    replace_original: true,
+    text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
+this is where i yap about random stuff, and only rarely commit academic fraud.
+please read the rules!
+btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
+cool, staying quiet. no everyone welcome from me.`,
+    blocks: [
+      {
+        type: "rich_text",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              {
+                type: "text",
+                text: "hello! welcome to ",
+              },
+              {
+                type: "channel",
+                channel_id: "C0A0QNJNDGQ",
+              },
+              {
+                type: "text",
+                text: "! ",
+              },
+              {
+                type: "emoji",
+                name: "ultrafastcatppuccinparrot",
+              },
+              {
+                type: "text",
+                text: "\nthis is where i yap about random stuff, and only rarely commit academic fraud.\nplease read ",
+              },
+              {
+                type: "link",
+                url: "https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A7L9BQ45R",
+                text: "the rules",
+              },
+              {
+                type: "text",
+                text: "!\nbtw i added you to ",
+              },
+              {
+                type: "usergroup",
+                usergroup_id: "S0A4705UBB3",
+              },
+              {
+                type: "text",
+                text: " so you can ",
+              },
+              {
+                type: "text",
+                text: "pinged",
+                style: {
+                  strike: true,
+                },
+              },
+              {
+                type: "text",
+                text: " pung when i post interesting stuff.\ncool, staying quiet. no everyone welcome from me.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "opt out of pings",
+            },
+            value: "remove_from_ping_group",
+            action_id: "remove_from_ping_group",
+          },
+        ],
+      },
+    ],
+  });
 });
 
 app.action(
