@@ -200,7 +200,7 @@ want me to announce you to the rest of the channel? i'll only send the everyone 
             type: "button",
             text: {
               type: "plain_text",
-              text: "yeah, announce me",
+              text: "yeah",
             },
             style: "primary",
             value: event.user,
@@ -210,7 +210,7 @@ want me to announce you to the rest of the channel? i'll only send the everyone 
             type: "button",
             text: {
               type: "plain_text",
-              text: "nah, stay quiet",
+              text: "nah",
             },
             value: event.user,
             action_id: "skip_announce",
