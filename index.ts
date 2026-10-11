@@ -133,7 +133,7 @@ app.event("member_joined_channel", async ({ event }) => {
 this is where i yap about random stuff, and only rarely commit academic fraud.
 please read the rules!
 btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
-want me to announce you to the rest of the channel? i'll only send the everyone welcome if you say yes. nobody else can see this.`,
+want me to announce you to the rest of the channel?`,
     blocks: [
       {
         type: "rich_text",
@@ -187,7 +187,22 @@ want me to announce you to the rest of the channel? i'll only send the everyone 
               },
               {
                 type: "text",
-                text: " pung when i post interesting stuff.\nwant me to announce you to the rest of the channel? i'll only send the everyone welcome if you say yes. nobody else can see this.",
+                text: " pung when i post interesting stuff.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "rich_text",
+        block_id: "announce_prompt",
+        elements: [
+          {
+            type: "rich_text_section",
+            elements: [
+              {
+                type: "text",
+                text: "want me to announce you to the rest of the channel?",
               },
             ],
           },
@@ -195,6 +210,7 @@ want me to announce you to the rest of the channel? i'll only send the everyone 
       },
       {
         type: "actions",
+        block_id: "announce_actions",
         elements: [
           {
             type: "button",
@@ -215,6 +231,11 @@ want me to announce you to the rest of the channel? i'll only send the everyone 
             value: event.user,
             action_id: "skip_announce",
           },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
           {
             type: "button",
             text: {
@@ -340,174 +361,38 @@ app.action("announce_join", async ({ body, ack, respond }) => {
     ],
   });
 
+  const remainingBlocks = ((body as BlockAction).message?.blocks ?? []).filter(
+    (block) =>
+      block.block_id !== "announce_prompt" &&
+      block.block_id !== "announce_actions",
+  );
+
   await respond({
     replace_original: true,
     text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
 this is where i yap about random stuff, and only rarely commit academic fraud.
 please read the rules!
-btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
-ok, announcing you to the rest of the channel now!`,
-    blocks: [
-      {
-        type: "rich_text",
-        elements: [
-          {
-            type: "rich_text_section",
-            elements: [
-              {
-                type: "text",
-                text: "hello! welcome to ",
-              },
-              {
-                type: "channel",
-                channel_id: "C0A0QNJNDGQ",
-              },
-              {
-                type: "text",
-                text: "! ",
-              },
-              {
-                type: "emoji",
-                name: "ultrafastcatppuccinparrot",
-              },
-              {
-                type: "text",
-                text: "\nthis is where i yap about random stuff, and only rarely commit academic fraud.\nplease read ",
-              },
-              {
-                type: "link",
-                url: "https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A7L9BQ45R",
-                text: "the rules",
-              },
-              {
-                type: "text",
-                text: "!\nbtw i added you to ",
-              },
-              {
-                type: "usergroup",
-                usergroup_id: "S0A4705UBB3",
-              },
-              {
-                type: "text",
-                text: " so you can ",
-              },
-              {
-                type: "text",
-                text: "pinged",
-                style: {
-                  strike: true,
-                },
-              },
-              {
-                type: "text",
-                text: " pung when i post interesting stuff.\nok, announcing you to the rest of the channel now!",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: "opt out of pings",
-            },
-            value: "remove_from_ping_group",
-            action_id: "remove_from_ping_group",
-          },
-        ],
-      },
-    ],
+btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
+    blocks: remainingBlocks,
   });
 });
 
-app.action("skip_announce", async ({ ack, respond }) => {
+app.action("skip_announce", async ({ body, ack, respond }) => {
   await ack();
+
+  const remainingBlocks = ((body as BlockAction).message?.blocks ?? []).filter(
+    (block) =>
+      block.block_id !== "announce_prompt" &&
+      block.block_id !== "announce_actions",
+  );
 
   await respond({
     replace_original: true,
     text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
 this is where i yap about random stuff, and only rarely commit academic fraud.
 please read the rules!
-btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
-cool, staying quiet. no everyone welcome from me.`,
-    blocks: [
-      {
-        type: "rich_text",
-        elements: [
-          {
-            type: "rich_text_section",
-            elements: [
-              {
-                type: "text",
-                text: "hello! welcome to ",
-              },
-              {
-                type: "channel",
-                channel_id: "C0A0QNJNDGQ",
-              },
-              {
-                type: "text",
-                text: "! ",
-              },
-              {
-                type: "emoji",
-                name: "ultrafastcatppuccinparrot",
-              },
-              {
-                type: "text",
-                text: "\nthis is where i yap about random stuff, and only rarely commit academic fraud.\nplease read ",
-              },
-              {
-                type: "link",
-                url: "https://hackclub.enterprise.slack.com/docs/T0266FRGM/F0A7L9BQ45R",
-                text: "the rules",
-              },
-              {
-                type: "text",
-                text: "!\nbtw i added you to ",
-              },
-              {
-                type: "usergroup",
-                usergroup_id: "S0A4705UBB3",
-              },
-              {
-                type: "text",
-                text: " so you can ",
-              },
-              {
-                type: "text",
-                text: "pinged",
-                style: {
-                  strike: true,
-                },
-              },
-              {
-                type: "text",
-                text: " pung when i post interesting stuff.\ncool, staying quiet. no everyone welcome from me.",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: "opt out of pings",
-            },
-            value: "remove_from_ping_group",
-            action_id: "remove_from_ping_group",
-          },
-        ],
-      },
-    ],
+btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
+    blocks: remainingBlocks,
   });
 });
 
