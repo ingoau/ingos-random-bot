@@ -130,10 +130,9 @@ app.event("member_joined_channel", async ({ event }) => {
     channel: event.channel,
     user: event.user,
     text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
-this is where i yap about random stuff, and only rarely commit academic fraud.
-please read the rules!
-btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.
-want me to announce you to the rest of the channel?`,
+    this is where i yap about random stuff, and only rarely commit academic fraud.
+    please read the rules!
+    btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
     blocks: [
       {
         type: "rich_text",
@@ -194,8 +193,29 @@ want me to announce you to the rest of the channel?`,
         ],
       },
       {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "opt out of pings",
+            },
+            value: "remove_from_ping_group",
+            action_id: "remove_from_ping_group",
+          },
+        ],
+      },
+    ],
+  });
+
+  await app.client.chat.postEphemeral({
+    channel: event.channel,
+    user: event.user,
+    text: "want me to announce you to the rest of the channel?",
+    blocks: [
+      {
         type: "rich_text",
-        block_id: "announce_prompt",
         elements: [
           {
             type: "rich_text_section",
@@ -210,7 +230,6 @@ want me to announce you to the rest of the channel?`,
       },
       {
         type: "actions",
-        block_id: "announce_actions",
         elements: [
           {
             type: "button",
@@ -230,20 +249,6 @@ want me to announce you to the rest of the channel?`,
             },
             value: event.user,
             action_id: "skip_announce",
-          },
-        ],
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: "opt out of pings",
-            },
-            value: "remove_from_ping_group",
-            action_id: "remove_from_ping_group",
           },
         ],
       },
@@ -361,39 +366,13 @@ app.action("announce_join", async ({ body, ack, respond }) => {
     ],
   });
 
-  const remainingBlocks = ((body as BlockAction).message?.blocks ?? []).filter(
-    (block) =>
-      block.block_id !== "announce_prompt" &&
-      block.block_id !== "announce_actions",
-  );
-
-  await respond({
-    replace_original: true,
-    text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
-this is where i yap about random stuff, and only rarely commit academic fraud.
-please read the rules!
-btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
-    blocks: remainingBlocks,
-  });
+  await respond({ delete_original: true });
 });
 
-app.action("skip_announce", async ({ body, ack, respond }) => {
+app.action("skip_announce", async ({ ack, respond }) => {
   await ack();
 
-  const remainingBlocks = ((body as BlockAction).message?.blocks ?? []).filter(
-    (block) =>
-      block.block_id !== "announce_prompt" &&
-      block.block_id !== "announce_actions",
-  );
-
-  await respond({
-    replace_original: true,
-    text: `hello! welcome to #ingo-commits-academic-fraud! :ultrafastcatppuccinparrot:
-this is where i yap about random stuff, and only rarely commit academic fraud.
-please read the rules!
-btw i added you to @ingo-pingo so you can pinged pung when i post interesting stuff.`,
-    blocks: remainingBlocks,
-  });
+  await respond({ delete_original: true });
 });
 
 app.action(
